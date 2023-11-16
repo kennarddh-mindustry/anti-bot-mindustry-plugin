@@ -1,5 +1,6 @@
 package kennarddh;
 
+import arc.util.CommandHandler;
 import arc.util.Log;
 import mindustry.mod.Plugin;
 
@@ -18,5 +19,12 @@ public class AntiBot extends Plugin {
 //        Log.info(subnetTrie.contains(Utils.ipIntArrayToInt(Utils.ipStringToIntArray("255.255.255.1"))));
 
         ipBlacklist = new IPBlacklist();
+    }
+
+    @Override
+    public void registerServerCommands(CommandHandler handler) {
+        handler.register("is_bot_ip", "<ip>", "Check is bot ip", arg -> {
+            Log.info(ipBlacklist.contains(arg[0]));
+        });
     }
 }
