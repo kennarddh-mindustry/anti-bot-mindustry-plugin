@@ -3,39 +3,34 @@ package kennarddh;
 import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnels;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.HashSet;
 
 public class IPList {
-    private BloomFilter<Integer> bloomFilter = BloomFilter.create(
+    private final BloomFilter<Integer> bloomFilter = BloomFilter.create(
             Funnels.integerFunnel(),
             5000000,
             0.01);
+
+    private final HashSet<Integer> hashSet = new HashSet<>();
 
     public void addCidrRange(String cidrIpAddress) throws UnknownHostException {
         String ip = cidrIpAddress.split("/")[0];
         String maskString = cidrIpAddress.split("/")[1];
 
-        int[] parts = Arrays.stream(ip.split("\\.")).mapToInt(Integer::parseInt).toArray();
+        int ipInt = ipIntArrayToInt(ipStringToIntArray(ip));
 
-        int ipInt = (parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3];
-
-        int maskbits = Integer.parseInt(maskString);
+        int maskBits = Integer.parseInt(maskString);
         int mask = 0xffffffff;
-        mask <<= (32 - maskbits);
+        mask <<= (32 - maskBits);
 
         int ipStart = ipInt & mask;
         int ipEnd = ipInt | (~mask);
 
-        System.out.println(Arrays.toString(parts));
-        System.out.println(Arrays.toString(intToIPIntArray(ipStart)));
-        System.out.println(Arrays.toString(intToIPIntArray(ipEnd)));
-
-        System.out.println("------------");
-
         for (int ipIter = ipStart; ipIter <= ipEnd; ipIter++) {
-            System.out.println(Arrays.toString(intToIPIntArray(ipIter)));
+            bloomFilter.put(ipIter);
+            hashSet.add(ipIter);
         }
     }
 
@@ -48,10 +43,27 @@ public class IPList {
         };
     }
 
-    public boolean isIpInBloomFilter(String ipAddress) throws Exception {
-        InetAddress ip = InetAddress.getByName(ipAddress);
-        int ipAddressInt = ip.getAddress()[0] << 24 | ip.getAddress()[1] << 16 | ip.getAddress()[2] << 8 | ip.getAddress()[3];
+    public static int ipIntArrayToInt(int[] intArray) {
+        return (intArray[0] << 24) | (intArray[1] << 16) | (intArray[2] << 8) | intArray[3];
+    }
 
-        return bloomFilter.mightContain(ipAddressInt);
+    public static int[] ipStringToIntArray(String ip) {
+        return Arrays.stream(ip.split("\\.")).mapToInt(Integer::parseInt).toArray();
+    }
+
+    public boolean contains(String ip) {
+        int ipInt = ipIntArrayToInt(ipStringToIntArray(ip));
+
+        boolean bloomFilterContain = bloomFilter.mightContain(ipInt);
+
+        if (!bloomFilterContain) {
+            return false;
+        }
+
+        return hashSet.contains(ipInt);
+    }
+
+    public int getSize() {
+        return hashSet.size();
     }
 }
