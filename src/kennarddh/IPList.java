@@ -3,7 +3,6 @@ package kennarddh;
 import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnels;
 
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -15,7 +14,7 @@ public class IPList {
 
     private final HashSet<Integer> hashSet = new HashSet<>();
 
-    public void addCidrRange(String cidrIpAddress) throws UnknownHostException {
+    public void addCidrRange(String cidrIpAddress) {
         String ip = cidrIpAddress.split("/")[0];
         String maskString = cidrIpAddress.split("/")[1];
 
