@@ -49,4 +49,36 @@ public class SubnetTrie {
             }
         }
     }
+
+    /**
+     * Check is the ip is in the trie
+     *
+     * @param ip 32 bit int ip representation
+     * @return True if the ip is in the trie
+     */
+    public boolean contains(int ip) {
+        boolean[] ipBits = Utils.intToBooleanArray(ip);
+
+        Utils.printBooleanArray(ipBits);
+
+        SubnetTrieNode currentNode = root;
+
+        for (int i = 0; i < 32; i++) {
+            boolean ipBit = ipBits[i];
+
+            if (currentNode.value) return true;
+
+            if (ipBit) {
+                if (currentNode.rightNode == null) return false;
+
+                currentNode = currentNode.rightNode;
+            } else {
+                if (currentNode.leftNode == null) return false;
+
+                currentNode = currentNode.leftNode;
+            }
+        }
+
+        return false;
+    }
 }
