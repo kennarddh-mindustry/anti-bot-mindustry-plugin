@@ -14,6 +14,8 @@ public class IPList {
 
     private final HashSet<Integer> hashSet = new HashSet<>();
 
+    private int size = 0;
+
     public void addCidrRange(String cidrIpAddress) {
         String ip = cidrIpAddress.split("/")[0];
         String maskString = cidrIpAddress.split("/")[1];
@@ -29,7 +31,8 @@ public class IPList {
 
         for (int ipIter = ipStart; ipIter <= ipEnd; ipIter++) {
             bloomFilter.put(ipIter);
-            hashSet.add(ipIter);
+//            hashSet.add(ipIter);
+            size += 1;
         }
     }
 
@@ -63,6 +66,6 @@ public class IPList {
     }
 
     public int getSize() {
-        return hashSet.size();
+        return size;
     }
 }
