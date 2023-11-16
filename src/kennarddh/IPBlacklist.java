@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 
 public class IPBlacklist {
     public static final String awsIPsURL = "https://ip-ranges.amazonaws.com/ip-ranges.json";
-    private final IPList ipList = new IPList();
+    private final SubnetTrie subnetTrie = new SubnetTrie();
 
 
     public IPBlacklist() {
@@ -23,22 +23,30 @@ public class IPBlacklist {
                 String service = element.getString("service");
 
                 if (service.equals("AMAZON")) {
-                    ipList.addCidrRange(element.getString("ip_prefix"));
+                    String ipPrefix = element.getString("ip_prefix");
+
+                    String ipString = ipPrefix.split("/")[0];
+                    String maskString = ipPrefix.split("/")[1];
+                    int maskInt = Integer.parseInt(maskString);
+
+                    int ip = Utils.ipIntArrayToInt(Utils.ipStringToIntArray(ipString));
+                    int subnetMask = Utils.cidrMaskToSubnetMask(maskInt);
+
+                    subnetTrie.addIP(ip, subnetMask);
                 }
             });
 
             Log.info("Added AWS IPs to blacklist.");
-
-            Log.info("Size");
-            Log.info(ipList.getSize());
         } catch (IOException e) {
             Log.info("Failed to fetch AWS IPs");
             throw new RuntimeException(e);
         }
     }
 
-    public boolean contains(String ip) {
-        return ipList.contains(ip);
+    public boolean contains(String ipString) {
+        int ip = Utils.ipIntArrayToInt(Utils.ipStringToIntArray(ipString));
+        
+        return subnetTrie.contains(ip);
     }
 
     public static String readStringFromURL(String requestURL) throws IOException {
