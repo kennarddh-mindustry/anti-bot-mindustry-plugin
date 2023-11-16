@@ -40,13 +40,13 @@ public class SubnetTrie {
 
             if (ipBit) {
                 if (currentNode.rightNode == null) {
-                    currentNode.rightNode = new SubnetTrieNode(isValue, null, null);
+                    currentNode.rightNode = new SubnetTrieNode(false, null, null);
                 }
 
                 currentNode = currentNode.rightNode;
             } else {
                 if (currentNode.leftNode == null) {
-                    currentNode.leftNode = new SubnetTrieNode(isValue, null, null);
+                    currentNode.leftNode = new SubnetTrieNode(false, null, null);
                 }
 
                 currentNode = currentNode.leftNode;
