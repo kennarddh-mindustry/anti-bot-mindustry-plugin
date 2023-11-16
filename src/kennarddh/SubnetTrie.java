@@ -1,7 +1,7 @@
 package kennarddh;
 
 public class SubnetTrie {
-    private SubnetTrieNode root;
+    private final SubnetTrieNode root;
 
     public SubnetTrie() {
         root = new SubnetTrieNode(false, null, null);
