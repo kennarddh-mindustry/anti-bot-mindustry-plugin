@@ -31,6 +31,10 @@ public class SubnetTrie {
             if (isValue || i == 31) {
                 currentNode.value = true;
 
+                // No need child node for a value node
+                currentNode.rightNode = null;
+                currentNode.leftNode = null;
+
                 break;
             }
 
