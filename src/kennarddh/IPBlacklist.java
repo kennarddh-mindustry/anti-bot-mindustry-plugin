@@ -10,8 +10,8 @@ import java.nio.charset.StandardCharsets;
 
 public class IPBlacklist {
     public static final String awsIPsURL = "https://ip-ranges.amazonaws.com/ip-ranges.json";
-    private final SubnetTrie subnetTrie = new SubnetTrie();
 
+    private final SubnetTrie subnetTrie = new SubnetTrie();
 
     public IPBlacklist() {
         try {
@@ -45,7 +45,7 @@ public class IPBlacklist {
 
     public boolean contains(String ipString) {
         int ip = Utils.ipIntArrayToInt(Utils.ipStringToIntArray(ipString));
-        
+
         return subnetTrie.contains(ip);
     }
 
