@@ -17,9 +17,6 @@ public class SubnetTrie {
         boolean[] ipBits = Utils.intToBooleanArray(ip);
         boolean[] subnetBits = Utils.intToBooleanArray(subnet);
 
-        Utils.printBooleanArray(ipBits);
-        Utils.printBooleanArray(subnetBits);
-
         SubnetTrieNode currentNode = root;
 
         for (int i = 0; i < 32; i++) {
@@ -62,8 +59,6 @@ public class SubnetTrie {
      */
     public boolean contains(int ip) {
         boolean[] ipBits = Utils.intToBooleanArray(ip);
-
-        Utils.printBooleanArray(ipBits);
 
         SubnetTrieNode currentNode = root;
 
