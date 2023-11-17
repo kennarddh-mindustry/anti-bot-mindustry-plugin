@@ -52,6 +52,15 @@ public class SubnetTrie {
     }
 
     /**
+     * Add ip to the trie with subnet 255.255.255.255
+     *
+     * @param ip 32 bit int ip representation
+     */
+    public void addIP(int ip) {
+        addIP(ip, Utils.cidrMaskToSubnetMask(32));
+    }
+
+    /**
      * Check is the ip is in the trie
      *
      * @param ip 32 bit int ip representation
