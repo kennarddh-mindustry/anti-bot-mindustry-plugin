@@ -10,10 +10,43 @@ import java.nio.charset.StandardCharsets;
 
 public class IPBlacklist {
     public static final String awsIPsURL = "https://ip-ranges.amazonaws.com/ip-ranges.json";
+    public static final String githubIPsURL = "https://api.github.com/meta";
 
     private final SubnetTrie subnetTrie = new SubnetTrie();
 
     public IPBlacklist() {
+        addAWSIPs();
+        addGithubIPs();
+    }
+
+    private void addGithubIPs() {
+        try {
+            String awsIPsOutput = readStringFromURL(githubIPsURL);
+
+            Jval json = Jval.read(awsIPsOutput);
+
+            json.get("actions").asArray().each(element -> {
+                String ip = element.asString();
+
+                String ipString = ip.split("/")[0];
+                String maskString = ip.split("/")[1];
+
+                int maskInt = Integer.parseInt(maskString);
+
+                int ipInt = Utils.ipIntArrayToInt(Utils.ipStringToIntArray(ipString));
+                int subnetMask = Utils.cidrMaskToSubnetMask(maskInt);
+
+                subnetTrie.addIP(ipInt, subnetMask);
+            });
+
+            Log.info("Added Github IPs to blacklist.");
+        } catch (IOException e) {
+            Log.info("Failed to fetch Github IPs");
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void addAWSIPs() {
         try {
             String awsIPsOutput = readStringFromURL(awsIPsURL);
 
