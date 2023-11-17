@@ -10,14 +10,14 @@ import java.nio.charset.StandardCharsets;
 
 public class IPBlacklist {
     public static final String awsIPsURL = "https://ip-ranges.amazonaws.com/ip-ranges.json";
-    public static final String githubIPsURL = "https://api.github.com/meta";
+    public static final String gitHubIPsURL = "https://api.github.com/meta";
     public static final String googleCloudIPsURL = "https://www.gstatic.com/ipranges/cloud.json";
 
     private final SubnetTrie subnetTrie = new SubnetTrie();
 
     public IPBlacklist() {
         addAWSIPs();
-        addGithubIPs();
+        addGitHubIPs();
         addGoogleCloudIPs();
     }
 
@@ -50,11 +50,11 @@ public class IPBlacklist {
         }
     }
 
-    private void addGithubIPs() {
+    private void addGitHubIPs() {
         try {
-            String awsIPsOutput = readStringFromURL(githubIPsURL);
+            String gitHubIPsOutput = readStringFromURL(gitHubIPsURL);
 
-            Jval json = Jval.read(awsIPsOutput);
+            Jval json = Jval.read(gitHubIPsOutput);
 
             json.get("actions").asArray().each(element -> {
                 String ip = element.asString();
@@ -73,9 +73,9 @@ public class IPBlacklist {
                 subnetTrie.addIP(ipInt, subnetMask);
             });
 
-            Log.info("Added Github IPs to blacklist.");
+            Log.info("Added GitHub IPs to blacklist.");
         } catch (IOException e) {
-            Log.info("Failed to fetch Github IPs");
+            Log.info("Failed to fetch GitHub IPs");
             throw new RuntimeException(e);
         }
     }
