@@ -1,24 +1,26 @@
 package kennarddh;
 
+import arc.Events;
 import arc.util.CommandHandler;
 import arc.util.Log;
+import mindustry.game.EventType;
 import mindustry.mod.Plugin;
 
 @SuppressWarnings("unused")
 public class AntiBot extends Plugin {
-    private IPBlacklist ipBlacklist;
+    private final IPBlacklist ipBlacklist = new IPBlacklist();
+
+    private static final long oneYearMS = 1000L * 60 * 60 * 24 * 365;
 
     @Override
     public void init() {
         Log.info("[AntiBot] Loaded");
 
-//        SubnetTrie subnetTrie = new SubnetTrie();
-//
-//        subnetTrie.addIP(Utils.ipIntArrayToInt(Utils.ipStringToIntArray("255.255.255.255")), Utils.cidrMaskToSubnetMask(24));
-//
-//        Log.info(subnetTrie.contains(Utils.ipIntArrayToInt(Utils.ipStringToIntArray("255.255.255.1"))));
-
-        ipBlacklist = new IPBlacklist();
+        Events.on(EventType.ConnectionEvent.class, con -> {
+            if (ipBlacklist.contains(con.connection.address)) {
+                con.connection.kick("Your IP is detected as bot. If you can read this message I can assume you are not a bot.", oneYearMS);
+            }
+        });
     }
 
     @Override
