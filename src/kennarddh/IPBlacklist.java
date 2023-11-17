@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class IPBlacklist {
     public static final String awsIPsURL = "https://ip-ranges.amazonaws.com/ip-ranges.json";
@@ -17,9 +18,10 @@ public class IPBlacklist {
     public static final String googleCloudIPsURL = "https://www.gstatic.com/ipranges/cloud.json";
 
     // Change number: 280. Doesn't update automatically like other cloud providers. Needs to update this url from https://www.microsoft.com/en-us/download/details.aspx?id=56519.
-    public static final String azureIpsURL = "https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20231113.json";
+    public static final String azureIPsURL = "https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20231113.json";
 
-    public static final String digitalOceanIpsURL = "https://digitalocean.com/geo/google.csv";
+    public static final String digitalOceanIPsURL = "https://digitalocean.com/geo/google.csv";
+    public static final String vpnIPsURL = "https://raw.githubusercontent.com/X4BNet/lists_vpn/main/output/vpn/ipv4.txt";
 
     private final SubnetTrie subnetTrie = new SubnetTrie();
 
@@ -29,11 +31,42 @@ public class IPBlacklist {
         addGoogleCloudIPs();
         addAzureIPs();
         addDigitalOceanIPs();
+        addVPNIPs();
+    }
+
+    private void addVPNIPs() {
+        try {
+            String vpnIPsOutput = readStringFromURL(vpnIPsURL);
+
+            try (Scanner scanner = new Scanner(vpnIPsOutput)) {
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+
+                    // Ignore IPv6
+                    if (line.contains(":")) return;
+
+                    String ipString = line.split("/")[0];
+                    String maskString = line.split("/")[1];
+
+                    int maskInt = Integer.parseInt(maskString);
+
+                    int ipInt = Utils.ipIntArrayToInt(Utils.ipStringToIntArray(ipString));
+                    int subnetMask = Utils.cidrMaskToSubnetMask(maskInt);
+
+                    subnetTrie.addIP(ipInt, subnetMask);
+                }
+            } finally {
+                Log.info("Added VPN IPs to blacklist.");
+            }
+        } catch (IOException e) {
+            Log.info("Failed to fetch VPN IPs");
+            throw new RuntimeException(e);
+        }
     }
 
     private void addDigitalOceanIPs() {
         try {
-            String digitalOceanIPsOutput = readStringFromURL(digitalOceanIpsURL);
+            String digitalOceanIPsOutput = readStringFromURL(digitalOceanIPsURL);
 
             try (CSVReader csvReader = new CSVReader(new StringReader(digitalOceanIPsOutput))) {
                 for (String[] line : csvReader.readAll()) {
@@ -65,7 +98,7 @@ public class IPBlacklist {
 
     private void addAzureIPs() {
         try {
-            String azureIPsOutput = readStringFromURL(azureIpsURL);
+            String azureIPsOutput = readStringFromURL(azureIPsURL);
 
             Jval json = Jval.read(azureIPsOutput);
 
