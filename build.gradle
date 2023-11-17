@@ -40,6 +40,7 @@ dependencies {
     annotationProcessor "com.github.Anuken:jabel:$jabelVersion"
 
     implementation("com.google.guava:guava:32.1.3-jre")
+    implementation("com.opencsv:opencsv:5.8")
 }
 
 //force arc version
@@ -54,6 +55,7 @@ configurations.configureEach {
 tasks.register('buildJar', Jar) {
     archiveFileName = "anti-bot-mindustry-plugin.jar"
     from compileJava.outputs.files
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
