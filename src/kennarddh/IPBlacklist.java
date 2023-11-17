@@ -53,10 +53,10 @@ public class IPBlacklist {
                     subnetTrie.addIP(ipInt, subnetMask);
                 }
             } finally {
-                Log.info("Added VPN IPs to blacklist.");
+                Log.info("[AntiBot] Added VPN IPs to blacklist.");
             }
         } catch (IOException e) {
-            Log.info("Failed to fetch VPN IPs");
+            Log.info("[AntiBot] Failed to fetch VPN IPs");
             throw new RuntimeException(e);
         }
     }
@@ -85,10 +85,10 @@ public class IPBlacklist {
             } catch (CsvException e) {
                 throw new RuntimeException(e);
             } finally {
-                Log.info("Added Digital Ocean IPs to blacklist.");
+                Log.info("[AntiBot] Added Digital Ocean IPs to blacklist.");
             }
         } catch (IOException e) {
-            Log.info("Failed to fetch Digital Ocean IPs");
+            Log.info("[AntiBot] Failed to fetch Digital Ocean IPs");
             throw new RuntimeException(e);
         }
     }
@@ -118,9 +118,9 @@ public class IPBlacklist {
                 });
             });
 
-            Log.info("Added Azure IPs to blacklist.");
+            Log.info("[AntiBot] Added Azure IPs to blacklist.");
         } catch (IOException e) {
-            Log.info("Failed to fetch Azure IPs");
+            Log.info("[AntiBot] Failed to fetch Azure IPs");
             throw new RuntimeException(e);
         }
     }
@@ -147,9 +147,9 @@ public class IPBlacklist {
                 subnetTrie.addIP(ipInt, subnetMask);
             });
 
-            Log.info("Added Google Cloud IPs to blacklist.");
+            Log.info("[AntiBot] Added Google Cloud IPs to blacklist.");
         } catch (IOException e) {
-            Log.info("Failed to fetch Google Cloud IPs");
+            Log.info("[AntiBot] Failed to fetch Google Cloud IPs");
             throw new RuntimeException(e);
         }
     }
@@ -177,9 +177,9 @@ public class IPBlacklist {
                 subnetTrie.addIP(ipInt, subnetMask);
             });
 
-            Log.info("Added GitHub IPs to blacklist.");
+            Log.info("[AntiBot] Added GitHub IPs to blacklist.");
         } catch (IOException e) {
-            Log.info("Failed to fetch GitHub IPs");
+            Log.info("[AntiBot] Failed to fetch GitHub IPs");
             throw new RuntimeException(e);
         }
     }
@@ -207,9 +207,9 @@ public class IPBlacklist {
                 }
             });
 
-            Log.info("Added AWS IPs to blacklist.");
+            Log.info("[AntiBot] Added AWS IPs to blacklist.");
         } catch (IOException e) {
-            Log.info("Failed to fetch AWS IPs");
+            Log.info("[AntiBot] Failed to fetch AWS IPs");
             throw new RuntimeException(e);
         }
     }
