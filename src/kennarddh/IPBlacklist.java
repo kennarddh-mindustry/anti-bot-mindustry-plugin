@@ -13,12 +13,48 @@ public class IPBlacklist {
     public static final String gitHubIPsURL = "https://api.github.com/meta";
     public static final String googleCloudIPsURL = "https://www.gstatic.com/ipranges/cloud.json";
 
+    // Change number: 280. Doesn't update automatically like other cloud providers. Needs to update this url from https://www.microsoft.com/en-us/download/details.aspx?id=56519.
+    public static final String azureIpsURL = "https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20231113.json";
+
     private final SubnetTrie subnetTrie = new SubnetTrie();
 
     public IPBlacklist() {
         addAWSIPs();
         addGitHubIPs();
         addGoogleCloudIPs();
+        addAzureIPs();
+    }
+
+    private void addAzureIPs() {
+        try {
+            String azureIPsOutput = readStringFromURL(azureIpsURL);
+
+            Jval json = Jval.read(azureIPsOutput);
+
+            json.get("values").asArray().each(element -> {
+                element.get("properties").asObject().get("addressPrefixes").asArray().each(ipElement -> {
+                    String ip = ipElement.asString();
+
+                    // Ignore IPv6
+                    if (ip.contains(":")) return;
+
+                    String ipString = ip.split("/")[0];
+                    String maskString = ip.split("/")[1];
+
+                    int maskInt = Integer.parseInt(maskString);
+
+                    int ipInt = Utils.ipIntArrayToInt(Utils.ipStringToIntArray(ipString));
+                    int subnetMask = Utils.cidrMaskToSubnetMask(maskInt);
+
+                    subnetTrie.addIP(ipInt, subnetMask);
+                });
+            });
+
+            Log.info("Added Azure IPs to blacklist.");
+        } catch (IOException e) {
+            Log.info("Failed to fetch Azure IPs");
+            throw new RuntimeException(e);
+        }
     }
 
     private void addGoogleCloudIPs() {
