@@ -6,10 +6,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class IPBlacklist {
@@ -36,7 +33,7 @@ public class IPBlacklist {
 
     private void addVPNIPs() {
         try {
-            String vpnIPsOutput = readStringFromURL(vpnIPsURL);
+            String vpnIPsOutput = Utils.readStringFromURL(vpnIPsURL);
 
             try (Scanner scanner = new Scanner(vpnIPsOutput)) {
                 while (scanner.hasNextLine()) {
@@ -66,7 +63,7 @@ public class IPBlacklist {
 
     private void addDigitalOceanIPs() {
         try {
-            String digitalOceanIPsOutput = readStringFromURL(digitalOceanIPsURL);
+            String digitalOceanIPsOutput = Utils.readStringFromURL(digitalOceanIPsURL);
 
             try (CSVReader csvReader = new CSVReader(new StringReader(digitalOceanIPsOutput))) {
                 for (String[] line : csvReader.readAll()) {
@@ -98,7 +95,7 @@ public class IPBlacklist {
 
     private void addAzureIPs() {
         try {
-            String azureIPsOutput = readStringFromURL(azureIPsURL);
+            String azureIPsOutput = Utils.readStringFromURL(azureIPsURL);
 
             Jval json = Jval.read(azureIPsOutput);
 
@@ -130,7 +127,7 @@ public class IPBlacklist {
 
     private void addGoogleCloudIPs() {
         try {
-            String googleCloudIPsOutput = readStringFromURL(googleCloudIPsURL);
+            String googleCloudIPsOutput = Utils.readStringFromURL(googleCloudIPsURL);
 
             Jval json = Jval.read(googleCloudIPsOutput);
 
@@ -159,7 +156,7 @@ public class IPBlacklist {
 
     private void addGitHubIPs() {
         try {
-            String gitHubIPsOutput = readStringFromURL(gitHubIPsURL);
+            String gitHubIPsOutput = Utils.readStringFromURL(gitHubIPsURL);
 
             Jval json = Jval.read(gitHubIPsOutput);
 
@@ -189,7 +186,7 @@ public class IPBlacklist {
 
     private void addAWSIPs() {
         try {
-            String awsIPsOutput = readStringFromURL(awsIPsURL);
+            String awsIPsOutput = Utils.readStringFromURL(awsIPsURL);
 
             Jval json = Jval.read(awsIPsOutput);
 
@@ -221,13 +218,5 @@ public class IPBlacklist {
         int ip = Utils.ipIntArrayToInt(Utils.ipStringToIntArray(ipString));
 
         return subnetTrie.contains(ip);
-    }
-
-    public static String readStringFromURL(String requestURL) throws IOException {
-        URL u = new URL(requestURL);
-
-        try (InputStream in = u.openStream()) {
-            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
-        }
     }
 }

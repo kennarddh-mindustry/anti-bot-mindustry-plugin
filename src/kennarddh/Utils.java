@@ -2,9 +2,21 @@ package kennarddh;
 
 import arc.util.Log;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class Utils {
+    public static String readStringFromURL(String requestURL) throws IOException {
+        URL u = new URL(requestURL);
+
+        try (InputStream in = u.openStream()) {
+            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        }
+    }
+
     public static int[] intToIPIntArray(int ip) {
         return new int[]{
                 (ip >> 24 & 0xff),
