@@ -11,12 +11,43 @@ import java.nio.charset.StandardCharsets;
 public class IPBlacklist {
     public static final String awsIPsURL = "https://ip-ranges.amazonaws.com/ip-ranges.json";
     public static final String githubIPsURL = "https://api.github.com/meta";
+    public static final String googleCloudIPsURL = "https://www.gstatic.com/ipranges/cloud.json";
 
     private final SubnetTrie subnetTrie = new SubnetTrie();
 
     public IPBlacklist() {
         addAWSIPs();
         addGithubIPs();
+        addGoogleCloudIPs();
+    }
+
+    private void addGoogleCloudIPs() {
+        try {
+            String googleCloudIPsOutput = readStringFromURL(googleCloudIPsURL);
+
+            Jval json = Jval.read(googleCloudIPsOutput);
+
+            json.get("prefixes").asArray().each(element -> {
+                if (!element.has("ipv4Prefix")) return;
+
+                String ip = element.getString("ipv4Prefix");
+
+                String ipString = ip.split("/")[0];
+                String maskString = ip.split("/")[1];
+
+                int maskInt = Integer.parseInt(maskString);
+
+                int ipInt = Utils.ipIntArrayToInt(Utils.ipStringToIntArray(ipString));
+                int subnetMask = Utils.cidrMaskToSubnetMask(maskInt);
+
+                subnetTrie.addIP(ipInt, subnetMask);
+            });
+
+            Log.info("Added Google Cloud IPs to blacklist.");
+        } catch (IOException e) {
+            Log.info("Failed to fetch Google Cloud IPs");
+            throw new RuntimeException(e);
+        }
     }
 
     private void addGithubIPs() {
@@ -27,6 +58,9 @@ public class IPBlacklist {
 
             json.get("actions").asArray().each(element -> {
                 String ip = element.asString();
+
+                // Ignore IPv6
+                if (ip.contains(":")) return;
 
                 String ipString = ip.split("/")[0];
                 String maskString = ip.split("/")[1];
