@@ -76,7 +76,7 @@ public class IPBlacklist {
                     String line = scanner.nextLine();
 
                     // Ignore IPv6
-                    if (line.contains(":")) return;
+                    if (line.contains(":")) continue;
 
                     String ipString = line.split("/")[0];
                     String maskString = line.split("/")[1];
@@ -106,7 +106,7 @@ public class IPBlacklist {
                     String ip = line[0];
 
                     // Ignore IPv6
-                    if (ip.contains(":")) return;
+                    if (ip.contains(":")) continue;
 
                     String ipString = ip.split("/")[0];
                     String maskString = ip.split("/")[1];
