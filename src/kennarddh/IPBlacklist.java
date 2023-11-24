@@ -46,15 +46,7 @@ public class IPBlacklist {
                     // Ignore IPv6
                     if (ip.contains(":")) continue;
 
-                    String ipString = ip.split("/")[0];
-                    String maskString = ip.split("/")[1];
-
-                    int maskInt = Integer.parseInt(maskString);
-
-                    int ipInt = Utils.ipIntArrayToInt(Utils.ipStringToIntArray(ipString));
-                    int subnetMask = Utils.cidrMaskToSubnetMask(maskInt);
-
-                    subnetTrie.addIP(ipInt, subnetMask);
+                    subnetTrie.addIP(ip);
                 }
             } catch (CsvException e) {
                 throw new RuntimeException(e);
@@ -73,20 +65,12 @@ public class IPBlacklist {
 
             try (Scanner scanner = new Scanner(vpnIPsOutput)) {
                 while (scanner.hasNextLine()) {
-                    String line = scanner.nextLine();
+                    String ip = scanner.nextLine();
 
                     // Ignore IPv6
-                    if (line.contains(":")) continue;
+                    if (ip.contains(":")) continue;
 
-                    String ipString = line.split("/")[0];
-                    String maskString = line.split("/")[1];
-
-                    int maskInt = Integer.parseInt(maskString);
-
-                    int ipInt = Utils.ipIntArrayToInt(Utils.ipStringToIntArray(ipString));
-                    int subnetMask = Utils.cidrMaskToSubnetMask(maskInt);
-
-                    subnetTrie.addIP(ipInt, subnetMask);
+                    subnetTrie.addIP(ip);
                 }
             } finally {
                 Log.info("[AntiBot] Added VPN IPs to blacklist.");
@@ -108,15 +92,7 @@ public class IPBlacklist {
                     // Ignore IPv6
                     if (ip.contains(":")) continue;
 
-                    String ipString = ip.split("/")[0];
-                    String maskString = ip.split("/")[1];
-
-                    int maskInt = Integer.parseInt(maskString);
-
-                    int ipInt = Utils.ipIntArrayToInt(Utils.ipStringToIntArray(ipString));
-                    int subnetMask = Utils.cidrMaskToSubnetMask(maskInt);
-
-                    subnetTrie.addIP(ipInt, subnetMask);
+                    subnetTrie.addIP(ip);
                 }
             } catch (CsvException e) {
                 throw new RuntimeException(e);
@@ -142,15 +118,7 @@ public class IPBlacklist {
                     // Ignore IPv6
                     if (ip.contains(":")) return;
 
-                    String ipString = ip.split("/")[0];
-                    String maskString = ip.split("/")[1];
-
-                    int maskInt = Integer.parseInt(maskString);
-
-                    int ipInt = Utils.ipIntArrayToInt(Utils.ipStringToIntArray(ipString));
-                    int subnetMask = Utils.cidrMaskToSubnetMask(maskInt);
-
-                    subnetTrie.addIP(ipInt, subnetMask);
+                    subnetTrie.addIP(ip);
                 });
             });
 
@@ -172,15 +140,7 @@ public class IPBlacklist {
 
                 String ip = element.getString("ipv4Prefix");
 
-                String ipString = ip.split("/")[0];
-                String maskString = ip.split("/")[1];
-
-                int maskInt = Integer.parseInt(maskString);
-
-                int ipInt = Utils.ipIntArrayToInt(Utils.ipStringToIntArray(ipString));
-                int subnetMask = Utils.cidrMaskToSubnetMask(maskInt);
-
-                subnetTrie.addIP(ipInt, subnetMask);
+                subnetTrie.addIP(ip);
             });
 
             Log.info("[AntiBot] Added Google Cloud IPs to blacklist.");
@@ -202,15 +162,7 @@ public class IPBlacklist {
                 // Ignore IPv6
                 if (ip.contains(":")) return;
 
-                String ipString = ip.split("/")[0];
-                String maskString = ip.split("/")[1];
-
-                int maskInt = Integer.parseInt(maskString);
-
-                int ipInt = Utils.ipIntArrayToInt(Utils.ipStringToIntArray(ipString));
-                int subnetMask = Utils.cidrMaskToSubnetMask(maskInt);
-
-                subnetTrie.addIP(ipInt, subnetMask);
+                subnetTrie.addIP(ip);
             });
 
             Log.info("[AntiBot] Added GitHub IPs to blacklist.");
@@ -232,14 +184,7 @@ public class IPBlacklist {
                 if (service.equals("AMAZON")) {
                     String ipPrefix = element.getString("ip_prefix");
 
-                    String ipString = ipPrefix.split("/")[0];
-                    String maskString = ipPrefix.split("/")[1];
-                    int maskInt = Integer.parseInt(maskString);
-
-                    int ip = Utils.ipIntArrayToInt(Utils.ipStringToIntArray(ipString));
-                    int subnetMask = Utils.cidrMaskToSubnetMask(maskInt);
-
-                    subnetTrie.addIP(ip, subnetMask);
+                    subnetTrie.addIP(ipPrefix);
                 }
             });
 
