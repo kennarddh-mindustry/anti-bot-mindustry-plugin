@@ -20,6 +20,7 @@ public class IPBlacklist {
     public static final String digitalOceanIPsURL = "https://digitalocean.com/geo/google.csv";
     public static final String vpnIPsURL = "https://raw.githubusercontent.com/X4BNet/lists_vpn/main/output/vpn/ipv4.txt";
     public static final String linodeIPsURL = "https://geoip.linode.com/";
+    public static final String oracleCloudIPsURL = "https://docs.oracle.com/en-us/iaas/tools/public_ip_ranges.json";
 
     private final SubnetTrie subnetTrie = new SubnetTrie();
 
@@ -31,6 +32,31 @@ public class IPBlacklist {
         addDigitalOceanIPs();
         addVPNIPs();
         addLinodeIPs();
+        addOracleCloudIPs();
+    }
+
+    private void addOracleCloudIPs() {
+        try {
+            String oracleCloudIPsOutput = Utils.readStringFromURL(oracleCloudIPsURL);
+
+            Jval json = Jval.read(oracleCloudIPsOutput);
+
+            json.get("regions").asArray().each(element -> {
+                element.get("cidrs").asArray().each(ipElement -> {
+                    String ip = ipElement.getString("cidr");
+
+                    // Ignore IPv6
+                    if (ip.contains(":")) return;
+
+                    subnetTrie.addIP(ip);
+                });
+            });
+
+            Log.info("[AntiBot] Added Oracle Cloud IPs to blacklist.");
+        } catch (IOException e) {
+            Log.info("[AntiBot] Failed to fetch Oracle Cloud IPs");
+            throw new RuntimeException(e);
+        }
     }
 
     private void addLinodeIPs() {
