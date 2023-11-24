@@ -19,6 +19,7 @@ public class IPBlacklist {
 
     public static final String digitalOceanIPsURL = "https://digitalocean.com/geo/google.csv";
     public static final String vpnIPsURL = "https://raw.githubusercontent.com/X4BNet/lists_vpn/main/output/vpn/ipv4.txt";
+    public static final String dataCenterIPsURL = "https://raw.githubusercontent.com/X4BNet/lists_vpn/main/output/datacenter/ipv4.txt";
     public static final String linodeIPsURL = "https://geoip.linode.com/";
     public static final String oracleCloudIPsURL = "https://docs.oracle.com/en-us/iaas/tools/public_ip_ranges.json";
 
@@ -31,6 +32,7 @@ public class IPBlacklist {
         addAzureIPs();
         addDigitalOceanIPs();
         addVPNIPs();
+        addDataCenterIPs();
         addLinodeIPs();
         addOracleCloudIPs();
     }
@@ -81,6 +83,28 @@ public class IPBlacklist {
             }
         } catch (IOException e) {
             Log.info("[AntiBot] Failed to fetch Linode IPs");
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void addDataCenterIPs() {
+        try {
+            String dataCenterIPsOutput = Utils.readStringFromURL(dataCenterIPsURL);
+
+            try (Scanner scanner = new Scanner(dataCenterIPsOutput)) {
+                while (scanner.hasNextLine()) {
+                    String ip = scanner.nextLine();
+
+                    // Ignore IPv6
+                    if (ip.contains(":")) continue;
+
+                    subnetTrie.addIP(ip);
+                }
+            } finally {
+                Log.info("[AntiBot] Added Data Center IPs to blacklist.");
+            }
+        } catch (IOException e) {
+            Log.info("[AntiBot] Failed to fetch Data Center IPs");
             throw new RuntimeException(e);
         }
     }
