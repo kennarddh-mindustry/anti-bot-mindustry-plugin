@@ -1,6 +1,7 @@
 package kennarddh;
 
 import arc.util.Log;
+import arc.util.Time;
 import arc.util.serialization.Jval;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
@@ -27,6 +28,8 @@ public class IPBlacklist {
     private final SubnetTrie subnetTrie = new SubnetTrie();
 
     public IPBlacklist() {
+        Time.mark();
+
         addAWSIPs();
         addGitHubIPs();
         addGoogleCloudIPs();
@@ -37,6 +40,8 @@ public class IPBlacklist {
         addLinodeIPs();
         addOracleCloudIPs();
         addBlackListedIPs();
+
+        Log.info("[AntiBot] Fetched black listed IPs in @ms", Time.elapsed());
     }
 
     private void addBlackListedIPs() {
