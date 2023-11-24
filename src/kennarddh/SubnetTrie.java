@@ -61,6 +61,21 @@ public class SubnetTrie {
     }
 
     /**
+     * @param ip String IP with CIDR notation
+     */
+    public void addIP(String ip) {
+        String ipString = ip.split("/")[0];
+        String maskString = ip.split("/")[1];
+
+        int maskInt = Integer.parseInt(maskString);
+
+        int ipInt = Utils.ipIntArrayToInt(Utils.ipStringToIntArray(ipString));
+        int subnetMask = Utils.cidrMaskToSubnetMask(maskInt);
+
+        addIP(ipInt, subnetMask);
+    }
+
+    /**
      * Check is the ip is in the trie
      *
      * @param ip 32 bit int ip representation
