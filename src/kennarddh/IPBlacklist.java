@@ -19,6 +19,7 @@ public class IPBlacklist {
 
     public static final String digitalOceanIPsURL = "https://digitalocean.com/geo/google.csv";
     public static final String vpnIPsURL = "https://raw.githubusercontent.com/X4BNet/lists_vpn/main/output/vpn/ipv4.txt";
+    public static final String linodeIPsURL = "https://geoip.linode.com/";
 
     private final SubnetTrie subnetTrie = new SubnetTrie();
 
@@ -29,6 +30,41 @@ public class IPBlacklist {
         addAzureIPs();
         addDigitalOceanIPs();
         addVPNIPs();
+        addLinodeIPs();
+    }
+
+    private void addLinodeIPs() {
+        try {
+            String linodeIPsOutput = Utils.readStringFromURL(linodeIPsURL);
+
+            try (CSVReader csvReader = new CSVReader(new StringReader(linodeIPsOutput))) {
+                for (String[] line : csvReader.readAll()) {
+                    if (line[0].startsWith("#")) continue;
+
+                    String ip = line[0];
+
+                    // Ignore IPv6
+                    if (ip.contains(":")) continue;
+
+                    String ipString = ip.split("/")[0];
+                    String maskString = ip.split("/")[1];
+
+                    int maskInt = Integer.parseInt(maskString);
+
+                    int ipInt = Utils.ipIntArrayToInt(Utils.ipStringToIntArray(ipString));
+                    int subnetMask = Utils.cidrMaskToSubnetMask(maskInt);
+
+                    subnetTrie.addIP(ipInt, subnetMask);
+                }
+            } catch (CsvException e) {
+                throw new RuntimeException(e);
+            } finally {
+                Log.info("[AntiBot] Added Linode IPs to blacklist.");
+            }
+        } catch (IOException e) {
+            Log.info("[AntiBot] Failed to fetch Linode IPs");
+            throw new RuntimeException(e);
+        }
     }
 
     private void addVPNIPs() {
