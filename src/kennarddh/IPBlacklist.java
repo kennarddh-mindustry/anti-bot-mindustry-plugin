@@ -23,7 +23,7 @@ public class IPBlacklist {
     public static final String dataCenterIPsURL = "https://raw.githubusercontent.com/X4BNet/lists_vpn/main/output/datacenter/ipv4.txt";
     public static final String linodeIPsURL = "https://geoip.linode.com/";
     public static final String oracleCloudIPsURL = "https://docs.oracle.com/en-us/iaas/tools/public_ip_ranges.json";
-    public static final String blackListedIPsURL = "https://gist.githubusercontent.com/kennarddh/42832a6577aae75084bece8ffafd1d6c/raw/21b99f9010bf55dd48fc43bc81243de9786d9d72/mindustryBlackListedIPs";
+    public static final String blackListedIPsURL = "https://raw.githubusercontent.com/TheRadioactiveBanana/BotEradicator/master/src/main/resources/blacklist/LargeListOfBlacklistedIps.json";
 
     private final SubnetTrie subnetTrie = new SubnetTrie();
 
